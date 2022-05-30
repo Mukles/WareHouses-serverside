@@ -52,12 +52,9 @@ async function run() {
 
     //post: add a new Product
 
-    app.post('/prouduct/add', (req, res) =>{
-      const doc = {
-        title: "Record of a Shriveled Datum",
-        content: "No bytes, no problem. Just insert a document, in MongoDB",
-      }
-      const result = await haiku.insertOne(doc);
+    app.post('/prouduct/add', async (req, res) =>{
+      const result = await productDb.insertOne(req.body);
+      res.send(result);
     })
 
     //put: deliverd Product;
@@ -72,6 +69,20 @@ async function run() {
       const result = await productDb.updateOne(filter, updateDoc);
 
       res.send({...product, stock: product.stock - 1}); 
+    });
+
+    //put: deliverd Product;
+    app.put('/proudct/restock/:id', async (req, res) =>{
+      const filter = { _id: ObjectId(req.params.id)};
+      const product = await productDb.findOne(filter);
+      const updateDoc = {
+        $set: {
+          stock: product.stock + req.body.stock
+        }
+      };
+      const result = await productDb.updateOne(filter, updateDoc);
+
+      res.send({...product, stock: product.stock + req.body.stock}); 
     })
 
 
