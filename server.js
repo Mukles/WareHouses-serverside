@@ -87,7 +87,10 @@ async function run() {
       const query = { _id: ObjectId(req.params.id)};
       const result = await productDb.deleteOne(query);
       if (result.deletedCount === 1) {
-        res.send("Successfully deleted one document.");
+        const query = {};
+        const cursor = productDb.find(query);
+        const products = await cursor.toArray();
+        res.send({ message: "Successfully deleted one document.", products });
       } 
       else {
         res.send("No documents matched the query. Deleted 0 documents.");
