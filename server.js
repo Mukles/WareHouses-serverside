@@ -10,9 +10,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// user : dbMukles
-//pass: Mukles123456
-
 const uri =
 `mongodb+srv://${dbUser}:${dbPassword}@cluster0.exgqs.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -83,7 +80,21 @@ async function run() {
       const result = await productDb.updateOne(filter, updateDoc);
 
       res.send({...product, stock: product.stock + req.body.stock}); 
-    })
+    });
+
+    //delete: proudct by id
+    app.delete('/product/:id', async(req, res) =>{
+      const query = { _id: ObjectId(req.params.id)};
+      const result = await productDb.deleteOne(query);
+      if (result.deletedCount === 1) {
+        res.send("Successfully deleted one document.");
+      } 
+      else {
+        res.send("No documents matched the query. Deleted 0 documents.");
+      }
+    });
+
+    
 
 
   } finally {
